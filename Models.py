@@ -159,16 +159,15 @@ class test_images(Dataset):
 
 
 class encoder(nn.Module):
-    def __init__(self):
+    def __init__(self,n_classes = 3):
         super().__init__()
         n_channel = 3
-        n_classes = 128
         self.in_conv = SuccessiveConv(n_channel, 64)
         self.down_1 = ContractingPath(64, 128)
         self.down_2 = ContractingPath(128, 256)
         self.down_3 = ContractingPath(256, 512)
         self.down_4 = ContractingPath(512, 1024)
-        self.fc1 = nn.Linear(16*16*1024,n_classes)
+        self.fc1 = nn.Linear(4*4*1024,n_classes)
 
     def forward(self, x):
         x_in_conv = self.in_conv(x)
@@ -176,7 +175,7 @@ class encoder(nn.Module):
         x_down_2 = self.down_2(x_down_1)
         x_down_3 = self.down_3(x_down_2)
         x_down_4 = self.down_4(x_down_3)
-        x_down_4 = x_down_4.view(-1,1024*16*16)
+        x_down_4 = x_down_4.view(-1,1024*4*4)
         fc1 = self.fc1(x_down_4)
         return fc1
 
@@ -423,6 +422,29 @@ class Polyp(Dataset):
             label = 1
         else:
             label = 0
+            
+        return to_tensor(img_file),label 
+    
+    def __len__(self):
+        return len(self.files)
+
+
+class Polyp_or_Not(Dataset):
+    def __init__(self, img_path):
+        self.img_path = img_path
+
+        img_files = set(os.listdir(self.img_path))
+        self.files = list(img_files)
+
+    def __getitem__(self, index):
+        filename = self.files[index]
+        img_file = Image.open(self.img_path + '/' + filename).convert("RGB")
+        img_file=img_file.resize((64,64))
+        to_tensor = transforms.ToTensor()
+        if 'nopolyp_' in filename:
+            label = 0
+        else:
+            label = 1
             
         return to_tensor(img_file),label 
     
