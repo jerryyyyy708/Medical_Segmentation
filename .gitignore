@@ -1,0 +1,12 @@
+__pycache__
+.ipynb_checkpoints
+專題進度
+backup
+Dataset
+flask
+Kvasir-SEG
+Kvasir-SEG-Origin
+Result
+*.png
+*.pt
+paper.txt
