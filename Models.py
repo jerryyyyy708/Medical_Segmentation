@@ -219,11 +219,22 @@ class MocoSet(Dataset):
     def __len__(self):
         return len(self.files)
 
-class Double_UNet(nn.Module):
-    #缺 squeeze and excitation block, 2/3 -> 1/2
+class VGG(nn.Module):
     def __init__(self):
         super().__init__()
         self.VGG=torchvision.models.vgg19(pretrained = True)
+        self.VGG.classifier[6] = nn.Linear(4096,2)
+    def forward(self,x):
+        return self.VGG(x)
+
+class Double_UNet(nn.Module):
+    #缺 squeeze and excitation block, 2/3 -> 1/2
+    def __init__(self,pretrained = False):
+        super().__init__()
+        if pretrained:
+            self.VGG = torch.load('vgg.pt').VGG
+        else:
+            self.VGG=torchvision.models.vgg19(pretrained = True)
         #VGG
         self.VGG_block1 = nn.Sequential(*self.VGG.features[:4])#64
         self.VGG_block2 = nn.Sequential(*self.VGG.features[4:9])#128
