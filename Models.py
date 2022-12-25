@@ -232,7 +232,7 @@ class Double_UNet(nn.Module):
     def __init__(self,pretrained = False):
         super().__init__()
         if pretrained:
-            self.VGG = torch.load('vgg.pt').VGG
+            self.VGG = torch.load('VGG.pt').VGG
         else:
             self.VGG=torchvision.models.vgg19(pretrained = True)
         #VGG
